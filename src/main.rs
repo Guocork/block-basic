@@ -4,11 +4,15 @@ use log::info;
 use redb::{Database, ReadableTable, TableDefinition};
 use serde::{Deserialize, Serialize};
 
+//区块
+#[derive(Debug)]
 
 struct Block {
     header: BlockHeader,
     body: BlockBody
 }
+
+#[derive(Debug)]
 
 struct BlockHeader {
     hash: String,
@@ -64,8 +68,58 @@ fn test_block_hash() {
 
     assert_eq!(block1.body, block2.body);
 }
+
+
+
+//区块链管理器
+#[derive(Debug)]
+struct BlockChain {
+    blocks: Vec<Block>,
+}
+
+impl BlockChain {
+    fn new() -> Self {
+        BlockChain { blocks: vec![] }
+    }
+    fn genesis() -> Block {
+        let txs = vec!["mine".to_string()];
+        Block::new(0, "First".to_string(), txs)
+    }
+    fn add_block(&mut self, block: Block) {
+        self.blocks.push(block);
+    }
+}
+
+
 fn main() {
-    println!("Hello, world!");
+    let mut blockchain = BlockChain::new();
+    let genesis_block = BlockChain::genesis();
+    let prev_hash = genesis_block.header.hash.clone();
+    blockchain.add_block(genesis_block); // 创建了只含有第一个区块的区块链
+
+    let b1 = Block::new(1, prev_hash, vec![]);
+    let prev_hash = b1.header.hash.clone();
+    blockchain.add_block(b1);
+
+    let b2 = Block::new(2, prev_hash, vec![]);
+    let prev_hash = b2.header.hash.clone();
+    blockchain.add_block(b2);
+
+    let b3 = Block::new(3, prev_hash, vec![]);
+    let prev_hash = b3.header.hash.clone();
+    blockchain.add_block(b3);
+
+    let b4 = Block::new(4, prev_hash, vec![]);
+    let prev_hash = b4.header.hash.clone();
+    blockchain.add_block(b4);
+
+    let b5 = Block::new(5, prev_hash, vec![]);
+    // let prev_hash = b5.header.hash.clone();
+    blockchain.add_block(b5);
+
+    println!("{:#?}",blockchain);
+
+
 }
 
 
