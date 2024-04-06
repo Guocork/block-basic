@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 use sha2::{Digest, Sha256};
 use anyhow::Result;
 use log::info;
@@ -5,15 +6,14 @@ use redb::{Database, ReadableTable, TableDefinition};
 use serde::{Deserialize, Serialize};
 
 //区块
-#[derive(Debug)]
 
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 struct Block {
     header: BlockHeader,
-    body: BlockBody
+    body: BlockBody,
 }
 
-#[derive(Debug)]
-
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 struct BlockHeader {
     hash: String,
     height: u64,
@@ -22,7 +22,7 @@ struct BlockHeader {
 }
 
 type BlockBody = Vec<String>;
-
+const TARGET_HEXS: usize = 4;
 impl Block {
     fn new(height: u64, prev_hash: String, body: BlockBody) -> Self {
         let timestamp = time::OffsetDateTime::now_utc().unix_timestamp() as u64;
@@ -51,6 +51,7 @@ fn calc_block_hash(height: u64, prev_hash: &str, timestamp: u64, body: &BlockBod
     hasher.update(concated_str.as_bytes());
     hex::encode(hasher.finalize().as_slice())
 }
+
 }
 
 
